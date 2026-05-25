@@ -56,7 +56,9 @@ pub fn run() {
                     let _ = window.hide();
                 }
                 if let tauri::WindowEvent::Focused(false) = event {
-                    let _ = window.hide();
+                    if !tray::recently_shown(400) {
+                        let _ = window.hide();
+                    }
                 }
             }
         })

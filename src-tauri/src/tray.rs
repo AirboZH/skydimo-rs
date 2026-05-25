@@ -1,15 +1,37 @@
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::Instant;
+
+use once_cell::sync::Lazy;
 use tauri::{
     image::Image,
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    App, LogicalPosition, Manager, PhysicalPosition, WebviewWindow,
+    App, LogicalPosition, Manager, PhysicalPosition, PhysicalSize, WebviewWindow,
 };
 
 const TRAY_ICON_PNG: &[u8] = include_bytes!("../icons/tray.png");
 
+static APP_START: Lazy<Instant> = Lazy::new(Instant::now);
+static LAST_SHOWN_MS: AtomicU64 = AtomicU64::new(0);
+
+fn mark_shown() {
+    let ms = APP_START.elapsed().as_millis() as u64;
+    LAST_SHOWN_MS.store(ms, Ordering::Relaxed);
+}
+
+// Windows' tray click sequence briefly drops focus before the panel can grab
+// it, which would otherwise trigger the click-outside-to-hide handler the
+// instant we showed the window.
+pub fn recently_shown(window_ms: u64) -> bool {
+    let last = LAST_SHOWN_MS.load(Ordering::Relaxed);
+    let now = APP_START.elapsed().as_millis() as u64;
+    now.saturating_sub(last) < window_ms
+}
+
 pub fn setup(app: &App) -> tauri::Result<()> {
+    Lazy::force(&APP_START);
     let show_item = MenuItem::with_id(app, "show", "Show panel", true, None::<&str>)?;
-    let quit_item = MenuItem::with_id(app, "quit", "Quit SkyDimo", true, Some("Cmd+Q"))?;
+    let quit_item = MenuItem::with_id(app, "quit", "Quit SkyDimo", true, Some("CmdOrCtrl+Q"))?;
     let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
 
     let icon = Image::from_bytes(TRAY_ICON_PNG)?;
@@ -44,8 +66,6 @@ pub fn setup(app: &App) -> tauri::Result<()> {
                     if visible {
                         let _ = window.hide();
                     } else {
-                        // Convert the rect's position+size to a physical anchor
-                        // (mid-bottom of the tray icon).
                         let scale = window
                             .current_monitor()
                             .ok()
@@ -60,11 +80,7 @@ pub fn setup(app: &App) -> tauri::Result<()> {
                             tauri::Size::Physical(s) => s,
                             tauri::Size::Logical(s) => s.to_physical::<u32>(scale),
                         };
-                        let anchor = PhysicalPosition::new(
-                            pos.x as f64 + size.width as f64 / 2.0,
-                            pos.y as f64 + size.height as f64,
-                        );
-                        let _ = show_panel(&window, Some(anchor));
+                        let _ = show_panel(&window, Some((pos, size)));
                     }
                 }
             }
@@ -74,21 +90,42 @@ pub fn setup(app: &App) -> tauri::Result<()> {
     Ok(())
 }
 
-fn show_panel(window: &WebviewWindow, anchor: Option<PhysicalPosition<f64>>) -> tauri::Result<()> {
-    if let Some(anchor) = anchor {
+fn show_panel(
+    window: &WebviewWindow,
+    icon: Option<(PhysicalPosition<i32>, PhysicalSize<u32>)>,
+) -> tauri::Result<()> {
+    if let Some((icon_pos, icon_size)) = icon {
         let monitor = window.current_monitor()?;
         let scale = monitor.as_ref().map(|m| m.scale_factor()).unwrap_or(1.0);
         let size = window.outer_size()?;
-        let center_x = anchor.x / scale;
-        let icon_bottom_y = anchor.y / scale;
-        let win_w = size.width as f64 / scale;
 
-        let mut x = center_x - win_w / 2.0;
+        let icon_left = icon_pos.x as f64 / scale;
+        let icon_top = icon_pos.y as f64 / scale;
+        let icon_w = icon_size.width as f64 / scale;
+        let icon_h = icon_size.height as f64 / scale;
+        let icon_center_x = icon_left + icon_w / 2.0;
+        let icon_bottom = icon_top + icon_h;
+
+        let win_w = size.width as f64 / scale;
+        let win_h = size.height as f64 / scale;
+
+        let mut x = icon_center_x - win_w / 2.0;
+        // Default: anchor below the icon (macOS menu bar). If there isn't
+        // room below (Windows taskbar at the bottom), anchor above instead.
+        let mut y = icon_bottom + 6.0;
+
         if let Some(m) = monitor.as_ref() {
-            let mon_pos = m.position();
-            let mon_size = m.size();
-            let min_x = mon_pos.x as f64 / scale + 6.0;
-            let max_x = (mon_pos.x as f64 + mon_size.width as f64) / scale - win_w - 6.0;
+            let mon_left = m.position().x as f64 / scale;
+            let mon_top = m.position().y as f64 / scale;
+            let mon_right = mon_left + m.size().width as f64 / scale;
+            let mon_bottom = mon_top + m.size().height as f64 / scale;
+
+            if y + win_h > mon_bottom - 6.0 {
+                y = (icon_top - 6.0 - win_h).max(mon_top + 6.0);
+            }
+
+            let min_x = mon_left + 6.0;
+            let max_x = mon_right - win_w - 6.0;
             if x < min_x {
                 x = min_x;
             }
@@ -96,9 +133,10 @@ fn show_panel(window: &WebviewWindow, anchor: Option<PhysicalPosition<f64>>) -> 
                 x = max_x;
             }
         }
-        let y = icon_bottom_y + 6.0;
+
         let _ = window.set_position(LogicalPosition::new(x, y));
     }
+    mark_shown();
     window.show()?;
     window.set_focus()?;
     Ok(())
