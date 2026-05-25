@@ -1,0 +1,43 @@
+[workspace]
+members = ["src-tauri"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[package]
+name = "screen-light"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serialport = "4"
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+[[bin]]
+name = "skydimo"
+path = "src/bin/skydimo.rs"
+
+[[bin]]
+name = "rainbow"
+path = "src/bin/rainbow.rs"
+
+[[bin]]
+name = "wipe"
+path = "src/bin/wipe.rs"
+
+[[bin]]
+name = "strap"
+path = "src/bin/strap.rs"
+
+[[bin]]
+name = "colormap"
+path = "src/bin/colormap.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1

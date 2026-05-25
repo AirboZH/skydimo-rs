@@ -1,0 +1,13 @@
+{
+  "name": "screenlight",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:typecheck": "npm --prefix frontend run typecheck",
+    "tauri": "cargo run --manifest-path src-tauri/Cargo.toml --features custom-protocol",
+    "dev": "cargo run --manifest-path src-tauri/Cargo.toml",
+    "build": "npm run frontend:build && cargo build --manifest-path src-tauri/Cargo.toml --release"
+  }
+}

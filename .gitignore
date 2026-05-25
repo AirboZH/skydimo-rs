@@ -1,0 +1,9 @@
+/target
+node_modules
+frontend/dist
+src-tauri/gen
+.DS_Store
+.idea/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
