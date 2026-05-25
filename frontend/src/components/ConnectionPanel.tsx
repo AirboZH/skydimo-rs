@@ -311,7 +311,7 @@ export function ConnectionPanel({ t, state, onClose, onState }: Props) {
             cursor: "pointer",
           }}
         >
-          Quit Screenlight
+          Quit SkyDimo
         </button>
       </div>
     </div>

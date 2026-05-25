@@ -1,11 +1,11 @@
 [package]
-name = "screenlight-app"
+name = "skydimo-rs"
 version.workspace = true
 edition.workspace = true
-description = "Screenlight — menu-bar control for SkyDimo LED strips"
+description = "SkyDimo — menu-bar control for SkyDimo LED strips"
 
 [lib]
-name = "screenlight_app_lib"
+name = "skydimo_rs_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -21,7 +21,7 @@ thiserror = "2"
 parking_lot = "0.12"
 once_cell = "1"
 serialport = "4"
-screen-light = { path = ".." }
+skydimo = { path = ".." }
 
 [features]
 default = ["custom-protocol"]

@@ -9,12 +9,12 @@ const TRAY_ICON_PNG: &[u8] = include_bytes!("../icons/tray.png");
 
 pub fn setup(app: &App) -> tauri::Result<()> {
     let show_item = MenuItem::with_id(app, "show", "Show panel", true, None::<&str>)?;
-    let quit_item = MenuItem::with_id(app, "quit", "Quit Screenlight", true, Some("Cmd+Q"))?;
+    let quit_item = MenuItem::with_id(app, "quit", "Quit SkyDimo", true, Some("Cmd+Q"))?;
     let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
 
     let icon = Image::from_bytes(TRAY_ICON_PNG)?;
 
-    TrayIconBuilder::with_id("screenlight-tray")
+    TrayIconBuilder::with_id("skydimo-tray")
         .icon(icon)
         .icon_as_template(true)
         .menu(&menu)

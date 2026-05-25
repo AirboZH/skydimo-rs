@@ -11,7 +11,7 @@ use std::time::{Duration, Instant};
 
 use anyhow::{anyhow, Context, Result};
 use parking_lot::Mutex;
-use screen_light::{
+use skydimo::{
     colormap::{self, ColorMap},
     find_ch340_port,
     strap::{self, ColorStrap},
@@ -192,7 +192,7 @@ impl Controller {
                     Some(info.pid),
                     info.manufacturer.clone(),
                     info.product.clone(),
-                    info.vid == screen_light::CH340_VID,
+                    info.vid == skydimo::CH340_VID,
                 ),
                 _ => (None, None, None, None, false),
             };

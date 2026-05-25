@@ -1,4 +1,4 @@
-//! SkyDimo / Adalight-variant LED strip driver.
+//! skydimo — SkyDimo / Adalight-variant LED strip driver.
 //!
 //! Wire format per frame:
 //!

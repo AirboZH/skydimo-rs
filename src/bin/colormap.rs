@@ -9,7 +9,7 @@ use std::time::{Duration, Instant};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use screen_light::{colormap, find_ch340_port, Rgb, Skydimo};
+use skydimo::{colormap, find_ch340_port, Rgb, Skydimo};
 
 #[derive(Parser)]
 struct Cli {

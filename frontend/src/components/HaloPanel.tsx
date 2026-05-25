@@ -74,7 +74,7 @@ export function HaloPanel({
             letterSpacing: -0.4,
           }}
         >
-          Screenlight
+          SkyDimo
         </div>
         <div
           title={state.connected ? "Connected" : "Not connected"}

@@ -1,4 +1,4 @@
-# screen-light
+# skydimo-rs
 
 Reverse-engineered driver for SkyDimo LED strips, written in Rust.
 

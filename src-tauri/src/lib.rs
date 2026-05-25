@@ -61,5 +61,5 @@ pub fn run() {
             }
         })
         .run(tauri::generate_context!())
-        .expect("error while running screenlight");
+        .expect("error while running skydimo-rs");
 }

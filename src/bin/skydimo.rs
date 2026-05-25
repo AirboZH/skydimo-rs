@@ -6,7 +6,7 @@
 
 use anyhow::{anyhow, Context, Result};
 use clap::{Parser, Subcommand};
-use screen_light::{find_ch340_port, Rgb, Skydimo};
+use skydimo::{find_ch340_port, Rgb, Skydimo};
 
 #[derive(Parser)]
 #[command(name = "skydimo", about = "Drive SkyDimo LED strip over CH340 serial")]

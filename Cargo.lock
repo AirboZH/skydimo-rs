@@ -3302,35 +3302,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
-name = "screen-light"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "image",
- "serde",
- "serde_json",
- "serialport",
-]
-
-[[package]]
-name = "screenlight-app"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "once_cell",
- "parking_lot",
- "screen-light",
- "serde",
- "serde_json",
- "serialport",
- "tauri",
- "tauri-build",
- "tauri-plugin-opener",
- "thiserror 2.0.18",
-]
-
-[[package]]
 name = "selectors"
 version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3607,6 +3578,35 @@ name = "siphasher"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b2aa850e253778c88a04c3d7323b043aeda9d3e30d5971937c1855769763678e"
+
+[[package]]
+name = "skydimo"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "image",
+ "serde",
+ "serde_json",
+ "serialport",
+]
+
+[[package]]
+name = "skydimo-rs"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "once_cell",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "serialport",
+ "skydimo",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-opener",
+ "thiserror 2.0.18",
+]
 
 [[package]]
 name = "slab"
